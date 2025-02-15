@@ -1,12 +1,34 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from './userservice.service';
+import { Router, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone:true,
+  imports:[CommonModule,RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']  // you can add custom styling here
 })
-export class AppComponent {
-  title = 'user-management';
+export class AppComponent implements OnInit {
+  users: any[] = [];
+  
+
+  constructor(private userService: UserService, private router: Router) {}
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.userService.getUsers().subscribe((data: any[]) => this.users = data);
+  }
+
+  editUser(id: number) {
+    this.router.navigate(['/edit', id]);
+  }
+
+  deleteUser(id: number) {
+    this.userService.deleteUser(id).subscribe(() => this.loadUsers());
+  }
 }
